@@ -52,7 +52,7 @@
 #include "sys_selftest.h"
 #include "gio.h"
 #include "sci.h"
-#include "het.h"
+#include "rti.h"
 #include "sys_dma.h"
 
 /* USER CODE BEGIN (0) */
@@ -93,6 +93,15 @@ void memoryPort1TestFailNotification(uint32 groupSelect, uint32 dataSelect, uint
 
 /* USER CODE BEGIN (8) */
 /* USER CODE END */
+void rtiNotification(uint32 notification)
+{
+/*  enter user code between the USER CODE BEGIN and USER CODE END. */
+/* USER CODE BEGIN (9) */
+/* USER CODE END */
+}
+
+/* USER CODE BEGIN (10) */
+/* USER CODE END */
 void gioNotification(gioPORT_t *port, uint32 bit)
 {
 /*  enter user code between the USER CODE BEGIN and USER CODE END. */
@@ -113,33 +122,6 @@ void sciNotification(sciBASE_t *sci, uint32 flags)
 /* USER CODE BEGIN (30) */
 /* USER CODE END */
 
-void pwmNotification(hetBASE_t * hetREG,uint32 pwm, uint32 notification)
-{
-/*  enter user code between the USER CODE BEGIN and USER CODE END. */
-/* USER CODE BEGIN (35) */
-/* USER CODE END */
-}
-
-/* USER CODE BEGIN (36) */
-/* USER CODE END */
-void edgeNotification(hetBASE_t * hetREG,uint32 edge)
-{
-/*  enter user code between the USER CODE BEGIN and USER CODE END. */
-/* USER CODE BEGIN (37) */
-/* USER CODE END */
-}
-
-/* USER CODE BEGIN (38) */
-/* USER CODE END */
-void hetNotification(hetBASE_t *het, uint32 offset)
-{
-/*  enter user code between the USER CODE BEGIN and USER CODE END. */
-/* USER CODE BEGIN (39) */
-/* USER CODE END */
-}
-
-/* USER CODE BEGIN (40) */
-/* USER CODE END */
 
 
 /* USER CODE BEGIN (43) */

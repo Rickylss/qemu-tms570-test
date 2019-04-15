@@ -78,6 +78,7 @@ extern void main(void);
 /*SAFETYMCUSW 354 S MR:NA <APPROVED> " Startup code(Extern declaration present in the library)" */
 extern void exit(int _status);
 
+void afterSTC(void);
 
 /* USER CODE BEGIN (3) */
 /* USER CODE END */
@@ -216,6 +217,57 @@ void _c_int00(void)
         /* clear all reset status flags */
         SYS_EXCEPTION = CPU_RESET;
 
+        /* reset could be caused by stcSelfCheck run or by an actual CPU self-test run */
+        
+        /* check if this was an stcSelfCheck run */
+        if ((stcREG->STCSCSCR & 0xFU) == 0xAU)            
+        {
+            /* check if the self-test fail bit is set */
+            if ((stcREG->STCGSTAT & 0x3U) != 0x3U)
+            {
+                /* STC self-check has failed */
+                stcSelfCheckFail();                        
+            }
+            /* STC self-check has passed */
+            else                                        
+            {
+                /* clear self-check mode */
+                stcREG->STCSCSCR = 0x05U;                
+                
+                /* clear STC global status flags */
+                stcREG->STCGSTAT = 0x3U;                
+                
+                /* clear ESM group1 channel 27 status flag */
+                esmREG->SR1[0U] = 0x08000000U;        
+                
+                /* Start CPU Self-Test */
+                cpuSelfTest(STC_INTERVAL, STC_MAX_TIMEOUT, TRUE);                            
+            }
+        }
+        /* CPU reset caused by CPU self-test completion */
+        else if ((stcREG->STCGSTAT & 0x1U) == 0x1U)        
+        {
+            /* Self-Test Fail flag is set */
+            if ((stcREG->STCGSTAT & 0x2U) == 0x2U)        
+            {
+                /* Call CPU self-test failure handler */
+                cpuSelfTestFail();                    
+            }
+            /* CPU self-test completed successfully */
+            else                                        
+            {
+                /* clear STC global status flag */
+                stcREG->STCGSTAT = 0x1U;  
+                
+                /* Continue start-up sequence after CPU STC completed */
+                afterSTC();                                
+            }
+        }
+        /* CPU reset caused by software writing to CPU RESET bit */
+        else                                            
+        {
+            /* Add custom routine here to handle the case where software causes CPU reset */
+        }
 /* USER CODE BEGIN (21) */
 /* USER CODE END */
 
@@ -264,9 +316,20 @@ void _c_int00(void)
 /* USER CODE END */
 
     /* Initialize System - Clock, Flash settings with Efuse self check */
-    //systemInit();
-    setupFlash();
+    systemInit();
     
+/* USER CODE BEGIN (27) */
+/* USER CODE END */
+
+    /* Make sure that the CPU self-test controller can actually detect a fault inside CPU */
+    stcSelfCheck();
+
+/* USER CODE BEGIN (28) */
+/* USER CODE END */
+}
+
+void afterSTC(void)
+{
 /* USER CODE BEGIN (29) */
 /* USER CODE END */
 
@@ -284,7 +347,7 @@ void _c_int00(void)
      * Hence the value 0x1 passed to the function.
      * This function will initialize the entire CPU RAM and the corresponding ECC locations.
      */
-    //memoryInit(0x1U);
+    memoryInit(0x1U);
 
 /* USER CODE BEGIN (38) */
 /* USER CODE END */
@@ -297,71 +360,6 @@ void _c_int00(void)
 /* USER CODE BEGIN (39) */
 /* USER CODE END */
 
-    /* Start PBIST on all dual-port memories */
-    /* NOTE : Please Refer DEVICE DATASHEET for the list of Supported Dual port Memories.
-       PBIST test performed only on the user selected memories in HALCoGen's GUI SAFETY INIT tab.
-     */
-//    pbistRun(  (uint32)0x00000000U    /* EMAC RAM */
-//             | (uint32)0x00000000U    /* USB RAM */
-//             | (uint32)0x00000000U    /* DMA RAM */
-//             | (uint32)0x00000000U    /* VIM RAM */
-//             | (uint32)0x00000000U    /* MIBSPI1 RAM */
-//             | (uint32)0x00000000U    /* MIBSPI3 RAM */
-//             | (uint32)0x00000000U    /* MIBSPI5 RAM */
-//             | (uint32)0x00000000U    /* CAN1 RAM */
-//             | (uint32)0x00000000U    /* CAN2 RAM */
-//             | (uint32)0x00000000U    /* CAN3 RAM */
-//             | (uint32)0x00000000U    /* ADC1 RAM */
-//             | (uint32)0x00000000U    /* ADC2 RAM */
-//             | (uint32)0x00000000U    /* HET1 RAM */
-//             | (uint32)0x00040000U    /* HET2 RAM */
-//             | (uint32)0x00000000U    /* HTU1 RAM */
-//             | (uint32)0x00000000U    /* HTU2 RAM */
-//             | (uint32)0x00000000U    /* RTP RAM */
-//             | (uint32)0x00000000U    /* FRAY RAM */
-//             ,(uint32) PBIST_March13N_DP);
-
-/* USER CODE BEGIN (40) */
-/* USER CODE END */
-/* USER CODE BEGIN (43) */
-/* USER CODE END */
-
-    /* Wait for PBIST for CPU RAM to be completed */
-    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-//    while(pbistIsTestCompleted() != TRUE)
-//    {
-//    }/* Wait */
-    
-
-/* USER CODE BEGIN (44) */
-/* USER CODE END */
-
-    /* Check if CPU RAM passed the self-test */
-//    if( pbistIsTestPassed() != TRUE)
-//    {
-//
-///* USER CODE BEGIN (45) */
-///* USER CODE END */
-//
-//        /* CPU RAM failed the self-test.
-//         * Need custom handler to check the memory failure
-//         * and to take the appropriate next step.
-//         */
-///* USER CODE BEGIN (46) */
-///* USER CODE END */
-//
-//        pbistFail();
-//
-///* USER CODE BEGIN (47) */
-///* USER CODE END */
-//    }
-
-/* USER CODE BEGIN (48) */
-/* USER CODE END */
-
-    /* Disable PBIST clocks and disable memory self-test mode */
-//    pbistStop();
-    
 /* USER CODE BEGIN (55) */
 /* USER CODE END */
 

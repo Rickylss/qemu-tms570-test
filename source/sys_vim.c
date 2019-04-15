@@ -182,14 +182,14 @@ void vimInit(void)
 	VIM_PARCTL = 0xAU;
 
 	/* Initialize VIM table */
-//    {
-//        uint32 i;
-//
-//        for (i = 0U; i < VIM_CHANNELS; i++)
-//        {
-//            vimRAM->ISR[i] = s_vim_init[i];
-//        }
-//    }
+    {
+        uint32 i;
+
+        for (i = 0U; i < VIM_CHANNELS; i++)
+        {
+            vimRAM->ISR[i] = s_vim_init[i];
+        }
+    }
     
     /* Set Fall-Back Address Parity Error Register */
 	/*SAFETYMCUSW 439 S MR:11.3 <APPROVED> " Need to store the address of a function in a 32 bit register - Advisory as per MISRA" */
