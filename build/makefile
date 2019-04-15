@@ -53,7 +53,7 @@ all: $(OBJS) $(LD_SRCS) $(GEN_CMDS)
 tms570.elf: $(OBJS) $(LD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: GNU Linker'
-	$(ARM-CC) -g3 -gdwarf-3 -w -Wall -specs="nosys.specs" -Wl,-Map,"tms570.map" -o"tms570.elf" $(ORDERED_OBJS)
+	$(ARM-CC) -g3 -gdwarf-3 -specs="nosys.specs" -Wl,-Map,"tms570.map" -o"tms570.elf" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
